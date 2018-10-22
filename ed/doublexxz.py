@@ -4,8 +4,8 @@ import numpy as np
 L=6
 #hilbertsize
 hilbertsize=2**(2*L)
-gort=0.1
-gpar=2.5
+gort=0.5
+gpar=0.5
 
 def binconf(c): return np.binary_repr(c,L)
 

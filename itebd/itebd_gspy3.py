@@ -6,11 +6,26 @@ Frank Pollmann, frankp@pks.mpg.de"""
 import numpy as np
 from scipy import integrate
 from scipy.linalg import expm 
+from ham import *
+
+#Hamiltonian
+
+gort=0.5
+gpar=0.5
+# diagonal part
+Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
+Ham += np.diag([-gpar*SzSz(conf,0,2) -gpar*SzSz(conf,1,3) for conf in range(hilbertsize)])
+# off-diagonal part
+for conf in range(hilbertsize):
+        value, newconf = Spinflip(conf,0,2)
+        Ham[newconf,conf] -=value     
+        value, newconf = Spinflip(conf,1,3)
+        Ham[newconf,conf] -=value     
+print(Ham)
+
 
 # First define the parameters of the model / simulation
-J=-1.; chi=100; d=4; delta=0.001; N=5000;
-#gx=0.5
-#gz=0.
+J=-1.; chi=100; d=4; delta=0.01; N=1000;
 B=[];s=[]
 for i in range(2):
 #	B.append(np.zeros([2,1,1])); B[-1][0,0,0]=1
@@ -73,7 +88,7 @@ for i_bond in range(2):
     C = np.tensordot(sBB,np.reshape(H_bond,[d,d,d,d]),axes=([1,2],[2,3]))
     sBB=np.conj(sBB)
     E.append(np.squeeze(np.tensordot(sBB,C,axes=([0,3,1,2],[0,1,2,3]))).item()) 
-#print "E_iTEBD =", np.mean(E)
+print("E_iTEBD =",np.mean(E))
 
 #f = lambda k,g : -2*np.sqrt(1+g**2-2*g*np.cos(k))/np.pi/2.
 #E0_exact = integrate.quad(f, 0, np.pi, args=(g,))[0]

@@ -1,11 +1,13 @@
 import numpy as np
 
+#library where the function suitable for building the hamiltonian
+#are defined
+
+
 #size
 L=2
 #hilbertsize
 hilbertsize=2**(2*L)
-gort=0.1
-gpar=0.5
 
 def binconf(c): return np.binary_repr(c,L)
 
@@ -44,18 +46,5 @@ def Spinflip(conf,i,j):
 
 
 
-#Hamiltonian
-# diagonal part
-Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
-Ham += np.diag([-gpar*SzSz(conf,0,2) -gpar*SzSz(conf,1,3) for conf in range(hilbertsize)])
-# off-diagonal part
-for conf in range(hilbertsize):
-        value, newconf = Spinflip(conf,0,2)
-        Ham[newconf,conf] -=value     
-        value, newconf = Spinflip(conf,1,3)
-        Ham[newconf,conf] -=value     
-       
-        
-print(Ham)
 
 
