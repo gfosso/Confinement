@@ -10,8 +10,8 @@ from ham import *
 
 #Hamiltonian
 
-gort=0.5
-gpar=0.5
+gort=1.5
+gpar=1.5
 # diagonal part
 Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
 Ham += np.diag([-gpar*SzSz(conf,0,2) -gpar*SzSz(conf,1,3) for conf in range(hilbertsize)])
@@ -70,14 +70,14 @@ for step in range(0, N):
 		B[ic] = np.transpose(np.reshape(Z,(chi2,d,chic)),(1,0,2))
 
 # compute magnetization
-#sz=np.array([[1.,0.],[0.,-1,]])
-#mag=[]
-#for i_bond in range(2):
-#	sB = np.tensordot(np.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
-#	C = np.tensordot(sB,sz,axes=(1,0))
-#	sB=np.conj(sB)
-#	mag.append(np.squeeze(np.tensordot(sB,C,axes=([0,2,1],[0,1,2]))).item()) 
-#print "sigmazeta =", np.mean(mag)
+sz=np.diag([Sz(conf,0) for conf in range(0,4)])
+mag=[]
+for i_bond in range(2):
+	sB = np.tensordot(np.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
+	C = np.tensordot(sB,sz,axes=(1,0))
+	sB=np.conj(sB)
+	mag.append(np.squeeze(np.tensordot(sB,C,axes=([0,2,1],[0,1,2]))).item()) 
+print("sigmazeta =", np.mean(mag))
 
 
 # Get the bond energies

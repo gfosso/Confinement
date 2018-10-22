@@ -1,24 +1,31 @@
-""" iTEBD code to find the ground state of 
-the 1D Ising model on an infinite chain.
-The results are compared to the exact results.
-Frank Pollmann, frankp@pks.mpg.de"""
+""" iTEBD code to quench the chain"""
 
-import numpy as np
-from scipy import integrate
-from scipy.linalg import expm 
+from ham import *
+
+#Hamiltonian
+
+gort=0.5
+gpar=0.5
+# diagonal part
+Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
+Ham += np.diag([-gpar*SzSz(conf,0,2) -gpar*SzSz(conf,1,3) for conf in range(hilbertsize)])
+# off-diagonal part
+for conf in range(hilbertsize):
+        value, newconf = Spinflip(conf,0,2)
+        Ham[newconf,conf] -=value     
+        value, newconf = Spinflip(conf,1,3)
+        Ham[newconf,conf] -=value     
+print(Ham)
 
 # First define the parameters of the model / simulation
 J=-1.; chi=100; d=2; delta=0.01; T=20; L=int(T/delta);
-gx=0.25
-gz=0.2
 mag1=[]
 #B1[0]=B[0].astype(complex);l1[0]=l[0].astype(complex)
 
 sz=np.array([[1.,0.],[0.,-1,]])
 # Generate the two-site time evolution operator
-H_bond = np.array([[J,gx*0.5,gx*0.5,0], [gx*0.5,-J,0,gx*0.5], [gx*0.5,0,-J,gx*0.5], [0,gx*0.5,gx*0.5,J]] )
-H_bond += np.diag([-gz,0,0,gz])
-U = np.reshape(expm(-complex(0,delta)*H_bond),(2,2,2,2))
+H_bond = Ham
+U = np.reshape(expm(-complex(0,delta)*H_bond),(4,4,4,4))
 
 # Perform the real time evolution alternating on A and B bonds
 for step in range(0, L):
