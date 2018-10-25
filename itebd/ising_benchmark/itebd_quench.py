@@ -4,38 +4,40 @@ from ham import *
 
 #Hamiltonian
 
-gort=-0.1
-gpar=2.0
+hlong=0.0
+htras=0.25
 # diagonal part
-Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
-Ham += np.diag([-gpar*SzSz(conf,0,2) -gpar*SzSz(conf,1,3) for conf in range(hilbertsize)])
+Ham=[]
+Ham = np.diag([ -4.*SzSz(conf,0,1) -hlong*Sz(conf,0) -hlong*Sz(conf,1) for conf in range(hilbertsize)])
 # off-diagonal part
 for conf in range(hilbertsize):
-        value, newconf = Spinflip(conf,0,2)
-        Ham[newconf,conf] -=value     
-        value, newconf = Spinflip(conf,1,3)
-        Ham[newconf,conf] -=value     
+        value, newconf = Sx(conf,0)
+        Ham[newconf,conf] -= htras*value     
+        value, newconf = Sx(conf,1)
+        Ham[newconf,conf] -= htras*value     
 print(Ham)
 
 # First define the parameters of the model / simulation
-J=-1.; chi=100; d=4; delta=0.01; T=20; L=int(T/delta);
+J=-1.; chi=100; d=2; delta=0.01; T=20; L=int(T/delta);
 mag1=[]
 #B1[0]=B[0].astype(complex);l1[0]=l[0].astype(complex)
 
-sz=np.diag([Sz(conf,0) for conf in range(0,4)])
+sz=np.diag([Sz(conf,0) for conf in range(0,2)])
 # Generate the two-site time evolution operator
 H_bond = Ham
-U = np.reshape(expm(-complex(0,delta)*H_bond),(4,4,4,4))
-
+U = np.reshape(expm(-complex(0,delta)*H_bond),(2,2,2,2))
+corr=[]
 # Perform the real time evolution alternating on A and B bonds
 for step in range(0, L): 
-    mag=[]
-    for i_bond in range(2):
-        sB = np.tensordot(np.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
-        C = np.tensordot(sB,sz,axes=(1,0))
-        sB=np.conj(sB)
-        mag.append(np.squeeze(np.tensordot(sB,C,axes=([0,2,1],[0,1,2]))).item())  
-    mag1.append(np.mean(mag))
+    v=[corrszsz(i,s,B) for i in range(0,40)]
+    corr.append(v)
+    #mag=[]
+    #for i_bond in range(2):
+    #    sB = np.tensordot(np.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
+    #    C = np.tensordot(sB,sz,axes=(1,0))
+    #    sB=np.conj(sB)
+    #    mag.append(np.squeeze(np.tensordot(sB,C,axes=([0,2,1],[0,1,2]))).item())  
+    #mag1.append(np.mean(mag))
     for i_bond in [0,1]:
         ia = np.mod(i_bond-1,2); ib = np.mod(i_bond,2); ic = np.mod(i_bond+1,2)
         chia = B[ib].shape[1]; chic = B[ic].shape[2]
