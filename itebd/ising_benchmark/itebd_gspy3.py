@@ -11,7 +11,7 @@ from ham import *
 #Hamiltonian
 
 hlong=0.0
-htras=0.0
+htras=0.5
 # diagonal part
 Ham=[]
 Ham = np.diag([ -4.*SzSz(conf,0,1) -hlong*Sz(conf,0) -hlong*Sz(conf,1) for conf in range(hilbertsize)])
@@ -28,8 +28,8 @@ print(Ham)
 J=-1.; chi=100; d=2; delta=0.01; N=3000;
 B=[];s=[]
 for i in range(2):
-#	B.append(np.zeros([2,1,1])); B[-1][0,0,0]=1
-#	s.append(np.ones([1]))
+	#B.append(np.zeros([2,1,1])); B[-1][0,0,0]=1
+	#s.append(np.ones([1]))
         B.append(np.random.rand(2,10,10))
         s.append(np.random.rand(10))
 

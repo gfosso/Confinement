@@ -1,10 +1,11 @@
 """ iTEBD code to quench the chain"""
-
+import matplotlib.pyplot as plt
 from ham import *
+from correlators import *
 
 #Hamiltonian
 
-hlong=0.0
+hlong=0.1
 htras=0.25
 # diagonal part
 Ham=[]
@@ -18,26 +19,21 @@ for conf in range(hilbertsize):
 print(Ham)
 
 # First define the parameters of the model / simulation
-J=-1.; chi=100; d=2; delta=0.01; T=20; L=int(T/delta);
-mag1=[]
+J=-1.; chi=100; d=2; delta=0.1; T=10; L=int(T/delta);
 #B1[0]=B[0].astype(complex);l1[0]=l[0].astype(complex)
 
 sz=np.diag([Sz(conf,0) for conf in range(0,2)])
+#sz=np.array([[0,1],[1,0]])
+
 # Generate the two-site time evolution operator
 H_bond = Ham
 U = np.reshape(expm(-complex(0,delta)*H_bond),(2,2,2,2))
 corr=[]
 # Perform the real time evolution alternating on A and B bonds
 for step in range(0, L): 
-    v=[corrszsz(i,s,B) for i in range(0,40)]
+    v=[corrszsz(i,s,B) for i in range(1,40)]
     corr.append(v)
-    #mag=[]
-    #for i_bond in range(2):
-    #    sB = np.tensordot(np.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
-    #    C = np.tensordot(sB,sz,axes=(1,0))
-    #    sB=np.conj(sB)
-    #    mag.append(np.squeeze(np.tensordot(sB,C,axes=([0,2,1],[0,1,2]))).item())  
-    #mag1.append(np.mean(mag))
+#    corr.append(magnetization(s,B))
     for i_bond in [0,1]:
         ia = np.mod(i_bond-1,2); ib = np.mod(i_bond,2); ic = np.mod(i_bond+1,2)
         chia = B[ib].shape[1]; chic = B[ic].shape[2]
@@ -66,6 +62,10 @@ for step in range(0, L):
 #print "sigmazeta =", np.mean(mag)
 
 time=np.arange(0,T,delta)
+distance= np.arange(1,40,1)
+plt.contourf(distance,time,corr,20,cmap='RdGy')
+plt.colorbar()
+plt.show()
 # Get the bond energies
 #E=[]
 #for i_bond in range(2):
