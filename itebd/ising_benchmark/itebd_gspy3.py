@@ -7,7 +7,8 @@ import numpy as np
 from scipy import integrate
 from scipy.linalg import expm 
 from ham import *
-
+import time
+start=time.time()
 #Hamiltonian
 
 hlong=0.0
@@ -93,3 +94,5 @@ print("E_iTEBD =",np.mean(E))
 f = lambda k,g : -2*np.sqrt(1+g**2-2*g*np.cos(k))/np.pi/2.
 E0_exact = integrate.quad(f, 0, np.pi, args=(htras,))[0]
 print("E_exact =", E0_exact)
+end=time.time()
+print(end-start)

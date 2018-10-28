@@ -2,10 +2,11 @@
 import matplotlib.pyplot as plt
 from ham import *
 from correlators import *
-
+import time
+start=time.time()
 #Hamiltonian
 
-hlong=0.1
+hlong=0.2
 htras=0.25
 # diagonal part
 Ham=[]
@@ -19,7 +20,7 @@ for conf in range(hilbertsize):
 print(Ham)
 
 # First define the parameters of the model / simulation
-J=-1.; chi=100; d=2; delta=0.1; T=10; L=int(T/delta);
+J=-1.; chi=100; d=2; delta=0.1; T=20; L=int(T/delta);
 #B1[0]=B[0].astype(complex);l1[0]=l[0].astype(complex)
 
 sz=np.diag([Sz(conf,0) for conf in range(0,2)])
@@ -79,3 +80,5 @@ plt.show()
 #f = lambda k,g : -2*np.sqrt(1+g**2-2*g*np.cos(k))/np.pi/2.
 #E0_exact = integrate.quad(f, 0, np.pi, args=(g,))[0]
 #print "E_exact =", E0_exact
+end=time.time()
+print(end-start)
