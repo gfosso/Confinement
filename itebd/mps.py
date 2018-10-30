@@ -36,9 +36,8 @@ def corrszsz(dist,s,B,d):
                 T=np.tensordot(T,np.conj(B[np.mod(i_bond+1+i,2)]),axes=(0,1))
                 R=np.trace(T,axis1=0,axis2=2)
             C=np.tensordot(B[np.mod(i_bond+dist,2)],np.conj(B[np.mod(i_bond+dist,2)]),axes=(2,2))
-            L=np.tensordot(C,sz,axes=([0,2],[0,1]))
-            mean2=np.trace(L)
-            corr.append( np.tensordot(R,L,axes=([0,1],[0,1])) - mean1*mean1)
+            L=np.tensordot(R,C,axes=([0,1],[1,3]))
+            corr.append( np.tensordot(L,sz,axes=([0,1],[0,1])) - mean1*mean1)
         return np.mean(np.real(corr))
 
 
