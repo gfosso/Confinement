@@ -12,8 +12,8 @@ import time
 start=time.time()
 
 #Hamiltonian
-
-gort=0.00
+htras=0.5
+gort=0.10
 gpar=3.0
 # diagonal part
 Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
@@ -24,6 +24,16 @@ for conf in range(hilbertsize):
         Ham[newconf,conf] -=value     
         value, newconf = Spinflip(conf,1,3)
         Ham[newconf,conf] -=value     
+#transverse external field
+for conf in range(hilbertsize):
+        value, newconf = Sx(conf,0)
+        Ham[newconf,conf] -= htras*value     
+        value, newconf = Sx(conf,1)
+        Ham[newconf,conf] -= htras*value     
+        value, newconf = Sx(conf,2)
+        Ham[newconf,conf] -= htras*value     
+        value, newconf = Sx(conf,3)
+        Ham[newconf,conf] -= htras*value     
 print(Ham)
 
 

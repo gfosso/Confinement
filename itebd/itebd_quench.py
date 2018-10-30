@@ -6,8 +6,8 @@ from mps import *
 import time
 start=time.time()
 #Hamiltonian
-
-gort=0.1
+htras=0.25
+gort=0.100
 gpar=3.0
 # diagonal part
 Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
@@ -18,6 +18,17 @@ for conf in range(hilbertsize):
         Ham[newconf,conf] -=value     
         value, newconf = Spinflip(conf,1,3)
         Ham[newconf,conf] -=value     
+#transverse external field
+for conf in range(hilbertsize):
+        value, newconf = Sx(conf,0)
+        Ham[newconf,conf] -= htras*value     
+        value, newconf = Sx(conf,1)
+        Ham[newconf,conf] -= htras*value     
+        value, newconf = Sx(conf,2)
+        Ham[newconf,conf] -= htras*value     
+        value, newconf = Sx(conf,3)
+        Ham[newconf,conf] -= htras*value     
+
 print(Ham)
 
 # First define the parameters of the model / simulation
@@ -29,9 +40,9 @@ U = np.reshape(expm(-complex(0,delta)*H_bond),(4,4,4,4))
 corr=[]
 # Perform the real time evolution alternating on A and B bonds
 for step in range(0, L): 
-    v=[corrszsz(i,s,B,d) for i in range(0,40)]
-    corr.append(v)
-#    corr.append(magnetization(s,B,d))
+#   v=[corrszsz(i,s,B,d) for i in range(0,30)]
+#   corr.append(v)
+    corr.append(magnetization(s,B,d))
     s,B=evol(s,B,U,chi,d)
 
 
@@ -39,10 +50,15 @@ for step in range(0, L):
 #print "sigmazeta =", np.mean(mag)
 
 t=np.arange(0,T,delta)
-distance= np.arange(0,40,1)
-plt.contourf(distance,t,corr,10,cmap='RdGy')
-plt.colorbar()
-plt.show()
+#distance= np.arange(0,40,1)
+#plt.contourf(distance,t,corr,10,cmap='RdGy')
+#plt.colorbar()
+#plt.show()
+
+#to save data to a file use
+np.savetxt('corr.out',corr)
+
+
 # Get the bond energies
 #E=[]
 #for i_bond in range(2):

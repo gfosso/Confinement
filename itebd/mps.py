@@ -10,7 +10,7 @@ def magnetization(s,B,d):
         sB = np.tensordot(np.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
         C=np.tensordot(sB,np.conj(sB),axes=([0,2],[0,2]))
         mag.append( np.tensordot(C,sz,axes=([0,1],[0,1])))
-    return np.mean(mag)
+    return np.mean(np.real(mag))
 
 #correlator between sz in different positions
 def corrszsz(dist,s,B,d):
@@ -22,7 +22,7 @@ def corrszsz(dist,s,B,d):
             sB = np.tensordot(np.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
             C=np.tensordot(sB,np.conj(sB),axes=([0,2],[0,2]))
             corr.append( np.tensordot(C,sz2,axes=([0,1],[0,1])) - np.tensordot(C,sz,axes=([0,1],[0,1]))*np.tensordot(C,sz,axes=([0,1],[0,1])))
-        return np.mean(corr)
+        return np.mean(np.real(corr))
 
     if dist !=0:
         dist=np.abs(dist)
@@ -39,7 +39,7 @@ def corrszsz(dist,s,B,d):
             L=np.tensordot(C,sz,axes=([0,2],[0,1]))
             mean2=np.trace(L)
             corr.append( np.tensordot(R,L,axes=([0,1],[0,1])) - mean1*mean1)
-        return np.mean(corr)
+        return np.mean(np.real(corr))
 
 
 #time evolution
