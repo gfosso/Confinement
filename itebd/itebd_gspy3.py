@@ -13,7 +13,7 @@ start=time.time()
 
 #Hamiltonian
 htras=0.5
-gort=0.05
+gort=0.10
 gpar=3.0
 # diagonal part
 Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])

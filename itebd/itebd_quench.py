@@ -7,7 +7,7 @@ import time
 start=time.time()
 #Hamiltonian
 htras=0.25
-gort=0.050
+gort=0.100
 gpar=3.0
 # diagonal part
 Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
@@ -32,7 +32,7 @@ for conf in range(hilbertsize):
 print(Ham)
 
 # First define the parameters of the model / simulation
-J=-1.; chi=150; d=4; delta=0.1; T=10; L=int(T/delta);
+J=-1.; chi=150; d=4; delta=0.1; T=5; L=int(T/delta);
 
 # Generate the two-site time evolution operator
 H_bond = Ham
@@ -40,10 +40,10 @@ U = np.reshape(expm(-complex(0,delta)*H_bond),(4,4,4,4))
 corr=[]
 # Perform the real time evolution alternating on A and B bonds
 for step in range(0, L): 
-   v=[corrszsz(i,s,B,d) for i in range(0,30)]
+   v=[corrszsz(i,s,B,d) for i in range(0,5)]
    corr.append(v)
  #   corr.append(magnetization(s,B,d))
- #   s,B=evol(s,B,U,chi,d)
+   s,B=evol(s,B,U,chi,d)
 
 
                 # compute magnetization

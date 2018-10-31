@@ -12,8 +12,8 @@ import time
 start=time.time()
 #Hamiltonian
 
-hlong=0.0
-htras=0.5
+hlong=0.1
+htras=0.0
 # diagonal part
 Ham=[]
 Ham = np.diag([ -4.*SzSz(conf,0,1) -hlong*Sz(conf,0) -hlong*Sz(conf,1) for conf in range(hilbertsize)])
