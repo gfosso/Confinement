@@ -5,6 +5,7 @@ Frank Pollmann, frankp@pks.mpg.de"""
 
 
 import numpy as np
+import cupy as cp
 from scipy import integrate
 from scipy.linalg import expm 
 from ham import *
@@ -42,19 +43,19 @@ def ground_state(gort):
 
 
     # First define the parameters of the model / simulation
-    J=-1.; chi=100; d=4; delta=0.01; N=2000;
+    J=-1.; chi=100; d=4; delta=0.01; N=1000;
     B=[];s=[]
     for i in range(2):
-    #	B.append(np.zeros([2,1,1])); B[-1][0,0,0]=1
-    #	s.append(np.ones([1]))
-            B.append(np.random.rand(4,10,10))
-            s.append(np.random.rand(10))
+    #	B.append(cp.zeros([2,1,1])); B[-1][0,0,0]=1
+    #	s.append(cp.ones([1]))
+            B.append(cp.random.rand(4,10,10))
+            s.append(cp.random.rand(10))
 
     # Generate the two-site time evolution operator
-    #H_bond = np.array([[J,gx*0.5,gx*0.5,0], [gx*0.5,-J,0,gx*0.5], [gx*0.5,0,-J,gx*0.5], [0,gx*0.5,gx*0.5,J]] )
-    #H_bond += np.diag([-gz,0,0,gz])
+    #H_bond = cp.array([[J,gx*0.5,gx*0.5,0], [gx*0.5,-J,0,gx*0.5], [gx*0.5,0,-J,gx*0.5], [0,gx*0.5,gx*0.5,J]] )
+    #H_bond += cp.diag([-gz,0,0,gz])
     H_bond=Ham
-    U = np.reshape(expm(-delta*H_bond),(4,4,4,4))
+    U =cp.asarray( np.reshape(expm(-delta*H_bond),(4,4,4,4)))
 
     # Perform the imaginary time evolution alternating on A and B bonds
     for step in range(0, N):
@@ -68,16 +69,16 @@ def ground_state(gort):
     # Get the bond energies
     E=[]
     for i_bond in range(2):
-        BB = np.tensordot(B[i_bond],B[np.mod(i_bond+1,2)],axes=(2,1))
-        sBB = np.tensordot(np.diag(s[np.mod(i_bond-1,2)]),BB,axes=(1,1))
-        C = np.tensordot(sBB,np.reshape(H_bond,[d,d,d,d]),axes=([1,2],[2,3]))
-        sBB=np.conj(sBB)
-        E.append(np.squeeze(np.tensordot(sBB,C,axes=([0,3,1,2],[0,1,2,3]))).item()) 
-    print("E_iTEBD =",np.mean(E))
+        BB = cp.tensordot(B[i_bond],B[cp.mod(i_bond+1,2)],axes=(2,1))
+        sBB = cp.tensordot(cp.diag(s[cp.mod(i_bond-1,2)]),BB,axes=(1,1))
+        C = cp.tensordot(sBB,cp.reshape(H_bond,[d,d,d,d]),axes=([1,2],[2,3]))
+        sBB=cp.conj(sBB)
+        E.append(cp.squeeze(cp.tensordot(sBB,C,axes=([0,3,1,2],[0,1,2,3]))).item()) 
+    print("E_iTEBD =",cp.mean(E))
 
     return s, B
-    #f = lambda k,g : -2*np.sqrt(1+g**2-2*g*np.cos(k))/np.pi/2.
-    #E0_exact = integrate.quad(f, 0, np.pi, args=(g,))[0]
+    #f = lambda k,g : -2*cp.sqrt(1+g**2-2*g*cp.cos(k))/cp.pi/2.
+    #E0_exact = integrate.quad(f, 0, cp.pi, args=(g,))[0]
     #print "E_exact =", E0_exact
     #end=time.time()
     #print(end-start)

@@ -2,6 +2,7 @@
 """ iTEBD code to quench the chain"""
 
 import sys, getopt
+import cupy as cp
 import numpy as np
 import matplotlib.pyplot as plt
 from ham import *
@@ -16,11 +17,11 @@ def main(argv):
     try:
         opts,args = getopt.getopt(argv,"hg:o:",["gort=","outputfile="])
     except getopt.GetoptError:
-        print("itebd_gspy3.py -g <gort value> -o <outputfile>")
+        print("itebd_quench.py -g <gort value> -o <outputfile>")
         sys.exit(2)
     for opt, arg in opts:
         if opt == "-h":
-            print("itebd_gspy3.py -g <gort value> -o <outputfile>")
+            print("itebd_quench.py -g <gort value> -o <outputfile>")
             sys.exit()
         elif opt in ("-g","--gort"):
             gort = float(arg)
@@ -56,7 +57,7 @@ def main(argv):
     print(Ham)
 
     # First define the parameters of the model / simulation
-    J=-1.; chi=150; d=4; delta=0.1; T=5; L=int(T/delta);
+    J=-1.; chi=150; d=4; delta=0.1; T=1; L=int(T/delta);
 
     # Generate the two-site time evolution operator
     H_bond = Ham
@@ -71,16 +72,16 @@ def main(argv):
 
 
                     # compute magnetization
-    #print "sigmazeta =", np.mean(mag)
+    #print "sigmazeta =", cp.mean(mag)
 
-    #t=np.arange(0,T,delta)
-    #distance= np.arange(0,40,1)
+    #t=cp.arange(0,T,delta)
+    #distance= cp.arange(0,40,1)
     #plt.contourf(distance,t,corr,10,cmap='RdGy')
     #plt.colorbar()
     #plt.show()
 
     #to save data to a file use
-    #np.savetxt('corr.out',corr)
+    np.savetxt(outputfile,corr)
 
 
     # Get the bond energies
