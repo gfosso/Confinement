@@ -16,9 +16,9 @@ from mps import *
 #start=time.time()
 def ground_state(gort):
     #Hamiltonian
-    htras=0.5
+    htras=0.0
     #gort=0.10
-    gpar=3.0
+    gpar=-1000.
     # diagonal part
     Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
     Ham += np.diag([-gpar*SzSz(conf,0,2) -gpar*SzSz(conf,1,3) for conf in range(hilbertsize)])

@@ -6,7 +6,7 @@ dist=30
 delta=0.1
 t=np.arange(0,T,delta)
 distance= np.arange(-dist+1,dist,1)
-data=np.loadtxt('corr.out')
+data=np.loadtxt('corrbuono.out')
 A=np.zeros((len(t),59))
 for i in range(0,len(data)):
     A[i,:]=np.append(np.flip(data[i,1:]),data[i,:])

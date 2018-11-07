@@ -1,12 +1,13 @@
 from ham import *
 import cupy as cp
+import numpy as np
 
 
 #expectation value of sz
 def magnetization(s,B,d):
     sz=cp.diag([Sz(conf,0) for conf in range(0,d)])
  #   sz=cp.array([[0,1],[1,0]])
-    mag=0.
+    mag=cp.array(0.,dtype=np.float32)
     for i_bond in range(2):
         sB = cp.tensordot(cp.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
         C=cp.tensordot(sB,cp.conj(sB),axes=([0,2],[0,2]))
@@ -16,14 +17,14 @@ def magnetization(s,B,d):
 #correlator between sz in different positions
 def corrszsz(dist,s,B,d):
     sz=cp.diag([Sz(conf,0) for conf in range(0,d)])
-    corr=[]
+    corr=cp.array(0.,dtype=np.float32)
     if dist ==0:
         sz2= cp.tensordot(sz,sz,axes=(1,0))
         for i_bond in range(2):
             sB = cp.tensordot(cp.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
             C=cp.tensordot(sB,cp.conj(sB),axes=([0,2],[0,2]))
-            corr.append( cp.tensordot(C,sz2,axes=([0,1],[0,1])) - cp.tensordot(C,sz,axes=([0,1],[0,1]))*cp.tensordot(C,sz,axes=([0,1],[0,1])))
-        return cp.mean(cp.real(corr))
+            corr += cp.real(cp.tensordot(C,sz2,axes=([0,1],[0,1])) - cp.tensordot(C,sz,axes=([0,1],[0,1]))*cp.tensordot(C,sz,axes=([0,1],[0,1])))
+        return 0.5*corr
 
     if dist !=0:
         dist=cp.abs(dist)
@@ -38,8 +39,8 @@ def corrszsz(dist,s,B,d):
                 R=cp.trace(T,axis1=0,axis2=2)
             C=cp.tensordot(B[cp.mod(i_bond+dist,2)],cp.conj(B[cp.mod(i_bond+dist,2)]),axes=(2,2))
             L=cp.tensordot(R,C,axes=([0,1],[1,3]))
-            corr.append( cp.tensordot(L,sz,axes=([0,1],[0,1])) - mean1*mean1)
-        return cp.mean(cp.real(corr))
+            corr += cp.real( cp.tensordot(L,sz,axes=([0,1],[0,1])) - mean1*mean1)
+        return 0.5*corr
 
 
 #time evolution

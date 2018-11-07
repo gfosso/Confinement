@@ -30,9 +30,9 @@ def main(argv):
     s,B = ground_state(gort) 
 
     #Hamiltonian
-    htras=0.25
+    htras=0.
     #gort=0.100
-    gpar=3.0
+    gpar=0.5
     # diagonal part
     Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
     Ham += np.diag([-gpar*SzSz(conf,0,2) -gpar*SzSz(conf,1,3) for conf in range(hilbertsize)])
@@ -56,7 +56,7 @@ def main(argv):
     print(Ham)
 
     # First define the parameters of the model / simulation
-    J=-1.; chi=150; d=4; delta=0.1; T=5; L=int(T/delta);
+    J=-1.; chi=150; d=4; delta=0.1; T=50; L=int(T/delta);
 
     # Generate the two-site time evolution operator
     H_bond = Ham
@@ -64,9 +64,9 @@ def main(argv):
     corr=[]
     # Perform the real time evolution alternating on A and B bonds
     for step in range(0, L): 
-       v=[corrszsz(i,s,B,d) for i in range(0,5)]
-       corr.append(v)
-     #   corr.append(magnetization(s,B,d))
+     #  v=[corrszsz(i,s,B,d) for i in range(0,5)]
+     #  corr.append(v)
+       corr.append(magnetization(s,B,d))
        s,B=evol(s,B,U,chi,d)
 
 
@@ -80,7 +80,7 @@ def main(argv):
     #plt.show()
 
     #to save data to a file use
-    #np.savetxt('corr.out',corr)
+    np.savetxt(outputfile,corr)
 
 
     # Get the bond energies
