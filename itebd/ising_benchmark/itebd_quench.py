@@ -11,7 +11,7 @@ import time
 start=time.time()
 
 def main(argv):
-    gort=''
+    hlong=''
     outputfile=''
     try:
         opts,args = getopt.getopt(argv,"hg:o:",["gort=","outputfile="])
@@ -23,64 +23,27 @@ def main(argv):
             print("itebd_gspy3.py -g <gort value> -o <outputfile>")
             sys.exit()
         elif opt in ("-g","--gort"):
-            gort = float(arg)
+            hlong = float(arg)
         elif opt in ("-o","--outputfile"):
             outputfile = arg
 
-#    s,B = ground_state(gort) 
-    s=[]
-    B=[]
-    s.append(np.ones([1]))
-    s.append(np.ones([1]))
-    B.append(np.zeros([4,1,1]))
-    B[-1][0,0,0]=1
-    B.append(np.zeros([4,1,1]))
-    B[-1][3,0,0]=1
+    s,B = ground_state(hlong) 
 
     #Hamiltonian
-    htras=0.
-    #gort=0.100
-    gpar=+2
-    # diagonal part
-    Ham = np.diag([ +gort*0.5*SzSz(conf,0,1) +gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
-    Ham += np.diag([+gpar*SzSz(conf,0,2) +gpar*SzSz(conf,1,3) for conf in range(hilbertsize)])
-    # off-diagonal part
-    for conf in range(hilbertsize):
-            value, newconf = Spinflip(conf,0,2)
-            Ham[newconf,conf] +=value     
-            value, newconf = Spinflip(conf,1,3)
-            Ham[newconf,conf] +=value     
-    #transverse external field
-#    for conf in range(hilbertsize):
-#            value, newconf = Sx(conf,0)
-#            Ham[newconf,conf] -= htras*value     
-#           value, newconf = Sx(conf,1)
-#           Ham[newconf,conf] -= htras*value     
-#           value, newconf = Sx(conf,2)
-#           Ham[newconf,conf] -= htras*value     
-#           value, newconf = Sx(conf,3)
-#           Ham[newconf,conf] -= htras*value     
-
-    print(Ham)
+    htras=0.25
 
     # First define the parameters of the model / simulation
-    J=-1.; chi=150; d=4; delta=0.1; T=10; L=int(T/delta);
+    J=-1.; chi=150; d=2; delta=0.1; T=30; L=int(T/delta);
 
     # Generate the two-site time evolution operator
-    H_bond = Ham
-    U = np.reshape(expm(-complex(0,delta)*H_bond),(4,4,4,4))
+    H_bond = IsingHam(hlong,htras)
+    U = np.reshape(expm(-complex(0,delta)*H_bond),(d,d,d,d))
     corr=[]
-    corr.append(np.zeros(L))
-    corr.append(np.zeros(L))
-    corr.append(np.zeros(L))
     # Perform the real time evolution alternating on A and B bonds
     for step in range(0, L): 
-      # v=[corrszsz(i,s,B,d) for i in range(0,5)]
-      # corr.append(v)
+       v=[corrszsz(i,s,B,d) for i in range(0,10)]
+       corr.append(v)
       # corr.append(magnetization(s,B,d))
-       corr[0][step]=4.*corrszsz(1,s,B,d)
-       corr[1][step]=4.*corrszsz(2,s,B,d)
-       corr[2][step]=4.*corrszsz(3,s,B,d)
        s,B=evol(s,B,U,chi,d)
 
 

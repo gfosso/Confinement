@@ -5,24 +5,24 @@ from ham import *
 def magnetization(s,B,d):
     sz=np.diag([Sz(conf,0) for conf in range(0,d)])
  #   sz=np.array([[0,1],[1,0]])
-    mag=0.
+    mag=[]
     for i_bond in range(2):
         sB = np.tensordot(np.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
         C=np.tensordot(sB,np.conj(sB),axes=([0,2],[0,2]))
-        mag += np.real( np.tensordot(C,sz,axes=([0,1],[0,1])))
-    return 0.5*mag
+        mag.append( np.tensordot(C,sz,axes=([0,1],[0,1])))
+    return np.mean(np.real(mag))
 
 #correlator between sz in different positions
 def corrszsz(dist,s,B,d):
     sz=np.diag([Sz(conf,0) for conf in range(0,d)])
-    corr=0.0
+    corr=[]
     if dist ==0:
         sz2= np.tensordot(sz,sz,axes=(1,0))
         for i_bond in range(2):
             sB = np.tensordot(np.diag(s[np.mod(i_bond-1,2)]),B[i_bond],axes=(1,1))
             C=np.tensordot(sB,np.conj(sB),axes=([0,2],[0,2]))
-            corr += np.real( np.tensordot(C,sz2,axes=([0,1],[0,1])) - np.tensordot(C,sz,axes=([0,1],[0,1]))*np.tensordot(C,sz,axes=([0,1],[0,1])))
-        return corr*0.5
+            corr.append( np.tensordot(C,sz2,axes=([0,1],[0,1])) - np.tensordot(C,sz,axes=([0,1],[0,1]))*np.tensordot(C,sz,axes=([0,1],[0,1])))
+        return np.mean(np.real(corr))
 
     if dist !=0:
         dist=np.abs(dist)
@@ -37,9 +37,8 @@ def corrszsz(dist,s,B,d):
                 R=np.trace(T,axis1=0,axis2=2)
             C=np.tensordot(B[np.mod(i_bond+dist,2)],np.conj(B[np.mod(i_bond+dist,2)]),axes=(2,2))
             L=np.tensordot(R,C,axes=([0,1],[1,3]))
-#            corr += np.real(np.tensordot(L,sz,axes=([0,1],[0,1])) - mean1*mean1) dovrebbe essere quello connesso
-            corr +=np.real( np.tensordot(L,sz,axes=([0,1],[0,1])))
-        return corr*0.5
+            corr.append( np.tensordot(L,sz,axes=([0,1],[0,1])) - mean1*mean1)
+        return np.mean(np.real(corr))
 
 
 #time evolution

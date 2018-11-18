@@ -1,11 +1,10 @@
 import numpy as np
 
 #size
-L=2
+L=6
 #hilbertsize
-hilbertsize=2**(2*L)
-gort=0.5
-gpar=0.5
+hilbertsize=2**L
+delta=-1.3322
 
 def binconf(c): return np.binary_repr(c,L)
 
@@ -19,6 +18,8 @@ def SzSz(conf,i,j):
 def Sz(conf,i):
     return readsite(conf,i)-0.5
 
+def XXZHam(conf):
+    return sum([- delta*( 4.*SzSz(conf,i,(i+1)%L) + 1. ) for i in range(L) ])
 
 #for conf in range(hilbertsize):
 #    print(IsingHam(conf))
@@ -44,18 +45,19 @@ def Spinflip(conf,i,j):
 
 
 
-#Hamiltonian
+# Hamiltonian
 # diagonal part
-Ham = np.diag([ -gort*0.5*SzSz(conf,0,1) -gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
-Ham += np.diag([-gpar*SzSz(conf,0,2) -gpar*SzSz(conf,1,3) for conf in range(hilbertsize)])
+Ham = np.diag([XXZHam(conf) for conf in range(hilbertsize)])
 # off-diagonal part
 for conf in range(hilbertsize):
-        value, newconf = Spinflip(conf,0,2)
-        Ham[newconf,conf] -=value     
-        value, newconf = Spinflip(conf,1,3)
-        Ham[newconf,conf] -=value     
-       
+    for i in range(L):
+        value, newconf = Spinflip(conf,i,(i+1)%L)
+        Ham[newconf,conf] -= 2.*value     
+        
         
 print(Ham)
+en ,pin = np.linalg.eigh(Ham)
+print(en[0]/L)
+
 
 

@@ -44,7 +44,19 @@ def Spinflip(conf,i,j):
 #        print(binconf(conf),binconf(Spinflip(conf,0,1)[1]))
 
 
-
+#IsingHam
+def IsingHam(hlong,htras):
+    # diagonal part
+    Ham=[]
+    Ham = np.diag([ -4.*SzSz(conf,0,1) -hlong*Sz(conf,0) -hlong*Sz(conf,1) for conf in range(hilbertsize)])
+    # off-diagonal part
+    for conf in range(hilbertsize):
+        value, newconf = Sx(conf,0)
+        Ham[newconf,conf] -= htras*value     
+        value, newconf = Sx(conf,1)
+        Ham[newconf,conf] -= htras*value    
+        
+    return Ham
 
 
 
