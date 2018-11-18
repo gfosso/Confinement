@@ -1,10 +1,10 @@
 import numpy as np
 #maronna
 #size
-L=6
+L=10
 #hilbertsize
 hilbertsize=2**L
-delta=-1.3322
+delta=-13322
 
 def binconf(c): return np.binary_repr(c,L)
 
@@ -39,20 +39,30 @@ def Spinflip(conf,i,j):
     else: return 0.0, conf
 
 
+def count(conf):
+	return sum(readsite(conf,i) for i in range(L))
 #for conf in range(hilbertsize):
 #        print(binconf(conf),binconf(Spinflip(conf,0,1)[1]))
+
+
+#reduced hilbert space in tot_sz=0 naive way
+
+c=[]
+for conf in range(hilbertsize):
+	if count(conf) == 0.5*L:
+		c.append(conf)
 
 
 
 
 # Hamiltonian
 # diagonal part
-Ham = np.diag([XXZHam(conf) for conf in range(hilbertsize)])
+Ham = np.diag([XXZHam(c[i]) for i in range(len(c))])
 # off-diagonal part
-for conf in range(hilbertsize):
+for j in range(len(c)):
     for i in range(L):
-        value, newconf = Spinflip(conf,i,(i+1)%L)
-        Ham[newconf,conf] -= 2.*value     
+        value, newconf = Spinflip(c[j],i,(i+1)%L)
+        Ham[c.index(newconf),j] -= 2.*value     
         
         
 print(Ham)
