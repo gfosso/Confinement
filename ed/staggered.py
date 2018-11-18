@@ -1,5 +1,4 @@
 import numpy as np
-#maronna
 #size
 L=6
 #hilbertsize
