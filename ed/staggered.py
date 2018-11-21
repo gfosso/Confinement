@@ -1,10 +1,10 @@
 import numpy as np
 #maronna
 #size
-L=10
+L=4
 #hilbertsize
 hilbertsize=2**L
-delta=-13322
+delta=-12
 
 def binconf(c): return np.binary_repr(c,L)
 
@@ -19,7 +19,7 @@ def Sz(conf,i):
     return readsite(conf,i)-0.5
 
 def XXZHam(conf):
-    return sum([- delta*( 4.*SzSz(conf,i,(i+1)%L) + 1. ) for i in range(L) ])
+    return sum([- delta*( 4.*SzSz(conf,i,(i+1)%L)  ) for i in range(L) ])
 
 #for conf in range(hilbertsize):
 #    print(IsingHam(conf))
@@ -44,25 +44,52 @@ def count(conf):
 #for conf in range(hilbertsize):
 #        print(binconf(conf),binconf(Spinflip(conf,0,1)[1]))
 
+def translate(conf):
+	zero=readsite(conf,0)
+	return (conf>>1)|(zero<<(L-1))
+
+#gives the lowest integer representative and the periodicity
+def lowestrepr(conf):
+	conf0=conf
+	conf1=conf
+	for i in range(L):
+		conf=translate(conf)
+		if conf1>conf: conf1=conf
+		elif conf0==conf: return conf1,i+1 
+	return conf1,L
+
+#gives the lowest integer representative and how many translations you need to reach that configuration	
+def repr(conf):
+	if lowestrepr(conf)[0]==conf: return conf,0
+	lowest=lowestrepr(conf)[0]
+	for i in range(L):
+		conf=translate(conf)
+		if conf==lowest:return lowest,i+1
+
+#return True if the state doesn't exist, False if it's already in the configuration vector
+def checkstate(lw):
+	for i in range(len(c)):
+		if c[i]==lw: return False
+	return True
 
 #reduced hilbert space in tot_sz=0 naive way
-
 c=[]
 for conf in range(hilbertsize):
-	if count(conf) == 0.5*L:
-		c.append(conf)
+	if (count(conf) == 0.5*L)&checkstate(lowestrepr(conf)):
+		lw=lowestrepr(conf)
+		c.append(lw)
 
 
 
 
 # Hamiltonian
 # diagonal part
-Ham = np.diag([XXZHam(c[i]) for i in range(len(c))])
+Ham = np.diag([XXZHam(c[i][0]) for i in range(len(c))])
 # off-diagonal part
 for j in range(len(c)):
     for i in range(L):
         value, newconf = Spinflip(c[j],i,(i+1)%L)
-        Ham[c.index(newconf),j] -= 2.*value     
+        Ham[c.index(lowestrepr(newconf)),j] -= 2.*value     
         
         
 print(Ham)
