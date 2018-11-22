@@ -1,10 +1,10 @@
 import numpy as np
 #maronna
 #size
-L=4
+L=8
 #hilbertsize
 hilbertsize=2**L
-delta=-12
+delta=1.
 
 def binconf(c): return np.binary_repr(c,L)
 
@@ -18,8 +18,6 @@ def SzSz(conf,i,j):
 def Sz(conf,i):
     return readsite(conf,i)-0.5
 
-def XXZHam(conf):
-    return sum([- delta*( 4.*SzSz(conf,i,(i+1)%L)  ) for i in range(L) ])
 
 #for conf in range(hilbertsize):
 #    print(IsingHam(conf))
@@ -72,24 +70,33 @@ def checkstate(lw):
 		if c[i]==lw: return False
 	return True
 
-#reduced hilbert space in tot_sz=0 naive way
+#reduced hilbert space for symmetry sector tot_sz=0 
 c=[]
 for conf in range(hilbertsize):
 	if (count(conf) == 0.5*L)&checkstate(lowestrepr(conf)):
 		lw=lowestrepr(conf)
 		c.append(lw)
+#reduced hilbert space for momentum states k=0
+ck=[]
+m=2
+for i in range(len(c)):
+    if m%(L/c[i][1]) == 0: ck.append(c[i])
 
 
+def XXZHam(conf):
+    return sum([ delta*(SzSz(conf,i,(i+1)%L)  ) for i in range(L) ])
 
 
-# Hamiltonian
+# Hamiltonian in symmetry sector tot_sz=0 and k=0
 # diagonal part
-Ham = np.diag([XXZHam(c[i][0]) for i in range(len(c))])
+Ham = np.diag([XXZHam(ck[i][0]) for i in range(len(ck))])
 # off-diagonal part
-for j in range(len(c)):
+for j in range(len(ck)):
     for i in range(L):
-        value, newconf = Spinflip(c[j],i,(i+1)%L)
-        Ham[c.index(lowestrepr(newconf)),j] -= 2.*value     
+        value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
+        d=lowestrepr(newconf)
+        if m%(L/d[1]) == 0:
+            Ham[j,ck.index(d)] += value*np.sqrt(ck[j][1]/d[1])*np.exp(+complex(0,(2.*np.pi*m)/L)*repr(newconf)[1])
         
         
 print(Ham)
