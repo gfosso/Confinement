@@ -1,9 +1,10 @@
 import numpy as np
 #size
-L=6
+L=8
 #hilbertsize
 hilbertsize=2**L
-delta=-1.3322
+epsilon=0.0001
+delta=-1/epsilon
 
 def binconf(c): return np.binary_repr(c,L)
 
@@ -18,7 +19,7 @@ def Sz(conf,i):
     return readsite(conf,i)-0.5
 
 def XXZHam(conf):
-    return sum([- delta*( 4.*SzSz(conf,i,(i+1)%L) + 1. ) for i in range(L) ])
+    return sum([-0.5*delta*( 4.*SzSz(conf,i,(i+1)%L) + 1. ) for i in range(L) ])
 
 #for conf in range(hilbertsize):
 #    print(IsingHam(conf))
@@ -55,7 +56,7 @@ for conf in range(hilbertsize):
         
         
 print(Ham)
-en ,pin = np.linalg.eigh(Ham)
+en ,pin = np.linalg.eigh((np.abs(delta)**(-1))*Ham)
 print(en[0]/L)
 
 
