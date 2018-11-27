@@ -4,9 +4,9 @@ import numpy as np
 L=8
 #hilbertsize
 hilbertsize=2**L
-#epsilon=0.00005
-#delta=-epsilon**(-1)
-delta=1.0
+epsilon=0.0005
+delta=-epsilon**(-1)
+h=0.0000001
 def binconf(c): return np.binary_repr(c,L)
 
 def readsite(conf,i): return (conf&(1<<i))>>i
@@ -86,7 +86,7 @@ def hilbertspace(Sz=0,m=0):
     return ck
 
 def XXZHam(conf):
-    return sum([ +delta*(SzSz(conf,i,(i+1)%L) ) for i in range(L) ])
+    return sum([ -0.5*delta*(4.*SzSz(conf,i,(i+1)%L) + 1. ) -2.*h*((-1)**i)*Sz(conf,i) for i in range(L) ])
 
 def spectrum(Sz=0,m=0):
     # Hamiltonian in symmetry sector tot_sz=0 and k=0
@@ -99,7 +99,7 @@ def spectrum(Sz=0,m=0):
             value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
             d=lowestrepr(newconf)
             if m%(L/d[1]) == 0:
-                Ham[ck.index(d),j] += value*np.sqrt(d[1]/ck[j][1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
+                Ham[ck.index(d),j] += 2.*value*np.sqrt(d[1]/ck[j][1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
     
     return np.sort(np.real(np.linalg.eigvals(np.abs(delta)**(-1)*Ham)))
         
@@ -107,10 +107,11 @@ def spectrum(Sz=0,m=0):
 #en ,pin = np.linalg.eigh((np.abs(delta)**(-1))*Ham)
 #print(en[0]/L)
 
-E=[]
+#E=[]
 
-for k in range(L):
-    E=np.append(E,spectrum(0,k))
+#for k in range(L//2+1):
+#    E=np.append(E,spectrum(0,k))
 
-E=np.sort(E)
-print(E)
+#E=np.sort(E)
+
+print(spectrum(0,0))
