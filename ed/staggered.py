@@ -4,8 +4,9 @@ import numpy as np
 L=8
 #hilbertsize
 hilbertsize=2**L
-delta=1.
-
+#epsilon=0.00005
+#delta=-epsilon**(-1)
+delta=1.0
 def binconf(c): return np.binary_repr(c,L)
 
 def readsite(conf,i): return (conf&(1<<i))>>i
@@ -64,44 +65,52 @@ def repr(conf):
 		conf=translate(conf)
 		if conf==lowest:return lowest,i+1
 
-#return True if the state doesn't exist, False if it's already in the configuration vector
-def checkstate(lw):
-	for i in range(len(c)):
-		if c[i]==lw: return False
-	return True
 
-#reduced hilbert space for symmetry sector tot_sz=0 
-c=[]
-for conf in range(hilbertsize):
-	if (count(conf) == 0.5*L)&checkstate(lowestrepr(conf)):
-		lw=lowestrepr(conf)
-		c.append(lw)
-#reduced hilbert space for momentum states k=0
-ck=[]
-m=2
-for i in range(len(c)):
-    if m%(L/c[i][1]) == 0: ck.append(c[i])
+def hilbertspace(Sz=0,m=0):
+    #reduced hilbert space for symmetry sector tot_sz=0 
+    c=[]
+    #return True if the state doesn't exist, False if it's already in the configuration vector
+    def checkstate(lw):
+            for i in range(len(c)):
+                    if c[i]==lw: return False
+            return True
+    for conf in range(hilbertsize):
+    	if (count(conf) == 0.5*L+Sz)&checkstate(lowestrepr(conf)):
+        		lw=lowestrepr(conf)
+        		c.append(lw)
+    #reduced hilbert space for momentum states k=0
+    ck=[]
+    for i in range(len(c)):
+        if m%(L/c[i][1]) == 0: ck.append(c[i])
 
+    return ck
 
 def XXZHam(conf):
-    return sum([ delta*(SzSz(conf,i,(i+1)%L)  ) for i in range(L) ])
+    return sum([ +delta*(SzSz(conf,i,(i+1)%L) ) for i in range(L) ])
 
-
-# Hamiltonian in symmetry sector tot_sz=0 and k=0
-# diagonal part
-Ham = np.diag([XXZHam(ck[i][0]) for i in range(len(ck))])
-# off-diagonal part
-for j in range(len(ck)):
-    for i in range(L):
-        value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
-        d=lowestrepr(newconf)
-        if m%(L/d[1]) == 0:
-            Ham[j,ck.index(d)] += value*np.sqrt(ck[j][1]/d[1])*np.exp(+complex(0,(2.*np.pi*m)/L)*repr(newconf)[1])
+def spectrum(Sz=0,m=0):
+    # Hamiltonian in symmetry sector tot_sz=0 and k=0
+    # diagonal part
+    ck=hilbertspace(Sz,m)
+    Ham = np.diag(np.array([XXZHam(ck[i][0]) for i in range(len(ck))],dtype=np.complex))
+    # off-diagonal part
+    for j in range(len(ck)):
+        for i in range(L):
+            value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
+            d=lowestrepr(newconf)
+            if m%(L/d[1]) == 0:
+                Ham[ck.index(d),j] += value*np.sqrt(d[1]/ck[j][1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
+    
+    return np.sort(np.real(np.linalg.eigvals(np.abs(delta)**(-1)*Ham)))
         
-        
-print(Ham)
-en ,pin = np.linalg.eigh(Ham)
-print(en[0]/L)
+#print(Ham)
+#en ,pin = np.linalg.eigh((np.abs(delta)**(-1))*Ham)
+#print(en[0]/L)
 
+E=[]
 
+for k in range(L):
+    E=np.append(E,spectrum(0,k))
 
+E=np.sort(E)
+print(E)
