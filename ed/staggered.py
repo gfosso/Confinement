@@ -1,12 +1,12 @@
 import numpy as np
 #maronna
 #size
-L=8
+L=6
 #hilbertsize
 hilbertsize=2**L
-epsilon=0.0005
+epsilon=0.00005
 delta=-epsilon**(-1)
-h=0.0000001
+h=0.000000
 def binconf(c): return np.binary_repr(c,L)
 
 def readsite(conf,i): return (conf&(1<<i))>>i
@@ -85,10 +85,18 @@ def hilbertspace(Sz=0,m=0):
 
     return ck
 
+def hilbertspace_totsz(Sz=0):
+    #reduced hilbert space for symmetry sector tot_sz=0 
+    c=[]
+    for conf in range(hilbertsize):
+        if (count(conf) == 0.5*L+Sz):
+        		c.append(conf)
+    return c
+
 def XXZHam(conf):
     return sum([ -0.5*delta*(4.*SzSz(conf,i,(i+1)%L) + 1. ) -2.*h*((-1)**i)*Sz(conf,i) for i in range(L) ])
 
-def spectrum(Sz=0,m=0):
+def spectrum_totsz_k(Sz=0,m=0):
     # Hamiltonian in symmetry sector tot_sz=0 and k=0
     # diagonal part
     ck=hilbertspace(Sz,m)
@@ -102,7 +110,32 @@ def spectrum(Sz=0,m=0):
                 Ham[ck.index(d),j] += 2.*value*np.sqrt(d[1]/ck[j][1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
     
     return np.sort(np.real(np.linalg.eigvals(np.abs(delta)**(-1)*Ham)))
-        
+       
+def spectrum_totsz(Sz=0):
+    # Hamiltonian in symmetry sector tot_sz=0 and k=0
+    # diagonal part
+    c=hilbertspace_totsz(Sz)
+    Ham = np.diag([XXZHam(c[i]) for i in range(len(c))])
+    # off-diagonal part
+    for j in range(len(c)):
+        for i in range(L):
+            value, newconf = Spinflip(c[j],i,(i+1)%L)
+            Ham[c.index(newconf),j] -= 2.*value
+    
+    return np.sort(np.linalg.eigvals(np.abs(delta)**(-1)*Ham))
+
+def spectrum():
+    # Hamiltonian in symmetry sector tot_sz=0 and k=0
+    # diagonal part
+    Ham = np.diag([XXZHam(conf) for conf in range(hilbertsize)])
+    # off-diagonal part
+    for conf in range(hilbertsize):
+        for i in range(L):
+            value, newconf = Spinflip(conf,i,(i+1)%L)
+            Ham[newconf,conf] -= 2.*value
+    
+    return np.sort(np.linalg.eigvals(np.abs(delta)**(-1)*Ham))
+
 #print(Ham)
 #en ,pin = np.linalg.eigh((np.abs(delta)**(-1))*Ham)
 #print(en[0]/L)
@@ -114,4 +147,4 @@ def spectrum(Sz=0,m=0):
 
 #E=np.sort(E)
 
-print(spectrum(0,0))
+#print(spectrum(0,0))
