@@ -1,12 +1,14 @@
 import numpy as np
+import scipy.special as sp
 #maronna
 #size
-L=6
+L=16
 #hilbertsize
 hilbertsize=2**L
-epsilon=0.00005
-delta=-epsilon**(-1)
-h=0.000000
+#epsilon=0.01
+#delta=-epsilon**(-1)
+delta=1.
+h=0.0
 def binconf(c): return np.binary_repr(c,L)
 
 def readsite(conf,i): return (conf&(1<<i))>>i
@@ -94,7 +96,7 @@ def hilbertspace_totsz(Sz=0):
     return c
 
 def XXZHam(conf):
-    return sum([ -0.5*delta*(4.*SzSz(conf,i,(i+1)%L) + 1. ) -2.*h*((-1)**i)*Sz(conf,i) for i in range(L) ])
+    return sum([ -delta*(SzSz(conf,i,(i+1)%L)  ) -2.*h*((-1)**i)*Sz(conf,i) for i in range(L) ])
 
 def spectrum_totsz_k(Sz=0,m=0):
     # Hamiltonian in symmetry sector tot_sz=0 and k=0
@@ -105,9 +107,9 @@ def spectrum_totsz_k(Sz=0,m=0):
     for j in range(len(ck)):
         for i in range(L):
             value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
-            d=lowestrepr(newconf)
+            d=lowestrepr(newconf) #ATTENZIONE FORSE QUI L'ERRORE!!!
             if m%(L/d[1]) == 0:
-                Ham[ck.index(d),j] += 2.*value*np.sqrt(d[1]/ck[j][1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
+                Ham[ck.index(d),j] += value*np.sqrt(ck[j][1]/d[1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
     
     return np.sort(np.real(np.linalg.eigvals(np.abs(delta)**(-1)*Ham)))
        
@@ -134,10 +136,10 @@ def spectrum():
             value, newconf = Spinflip(conf,i,(i+1)%L)
             Ham[newconf,conf] -= 2.*value
     
-    return np.sort(np.linalg.eigvals(np.abs(delta)**(-1)*Ham))
+    return np.linalg.eigh((np.abs(delta)**(-1))*Ham)
+#    return np.sort(np.linalg.eigvals(np.abs(delta)**(-1)*Ham))
 
 #print(Ham)
-#en ,pin = np.linalg.eigh((np.abs(delta)**(-1))*Ham)
 #print(en[0]/L)
 
 #E=[]
