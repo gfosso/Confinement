@@ -2,12 +2,11 @@ import numpy as np
 import scipy.special as sp
 #maronna
 #size
-L=16
+L=17
 #hilbertsize
 hilbertsize=2**L
-#epsilon=0.01
-#delta=-epsilon**(-1)
-delta=1.
+epsilon=0.0001
+delta=-epsilon**(-1)
 h=0.0
 def binconf(c): return np.binary_repr(c,L)
 
@@ -77,7 +76,7 @@ def hilbertspace(Sz=0,m=0):
                     if c[i]==lw: return False
             return True
     for conf in range(hilbertsize):
-    	if (count(conf) == 0.5*L+Sz)&checkstate(lowestrepr(conf)):
+    	if (count(conf) == L//2+Sz)&checkstate(lowestrepr(conf)):
         		lw=lowestrepr(conf)
         		c.append(lw)
     #reduced hilbert space for momentum states k=0
@@ -91,12 +90,12 @@ def hilbertspace_totsz(Sz=0):
     #reduced hilbert space for symmetry sector tot_sz=0 
     c=[]
     for conf in range(hilbertsize):
-        if (count(conf) == 0.5*L+Sz):
+        if (count(conf) == L//2+Sz):
         		c.append(conf)
     return c
 
 def XXZHam(conf):
-    return sum([ -delta*(SzSz(conf,i,(i+1)%L)  ) -2.*h*((-1)**i)*Sz(conf,i) for i in range(L) ])
+    return sum([ -0.5*delta*(4.0*SzSz(conf,i,(i+1)%L) + 1.0  ) -2.*h*((-1)**i)*Sz(conf,i) for i in range(L) ])
 
 def spectrum_totsz_k(Sz=0,m=0):
     # Hamiltonian in symmetry sector tot_sz=0 and k=0
@@ -107,9 +106,9 @@ def spectrum_totsz_k(Sz=0,m=0):
     for j in range(len(ck)):
         for i in range(L):
             value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
-            d=lowestrepr(newconf) #ATTENZIONE FORSE QUI L'ERRORE!!!
+            d=lowestrepr(newconf) 
             if m%(L/d[1]) == 0:
-                Ham[ck.index(d),j] += value*np.sqrt(ck[j][1]/d[1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
+                Ham[ck.index(d),j] -= 2.*value*np.sqrt(ck[j][1]/d[1])*np.exp(complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
     
     return np.sort(np.real(np.linalg.eigvals(np.abs(delta)**(-1)*Ham)))
        
