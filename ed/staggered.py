@@ -1,13 +1,13 @@
 import numpy as np
 import scipy.special as sp
-#maronna
 #size
-L=17
+L=12
 #hilbertsize
 hilbertsize=2**L
-epsilon=0.0001
+epsilon=0.001
 delta=-epsilon**(-1)
-h=0.0
+h=0.01
+
 def binconf(c): return np.binary_repr(c,L)
 
 def readsite(conf,i): return (conf&(1<<i))>>i
@@ -44,16 +44,27 @@ def count(conf):
 #for conf in range(hilbertsize):
 #        print(binconf(conf),binconf(Spinflip(conf,0,1)[1]))
 
+
+#translation operator 
 def translate(conf):
-	zero=readsite(conf,0)
-	return (conf>>1)|(zero<<(L-1))
+    zero=readsite(conf,0)
+    return (conf>>1)|(zero<<(L-1))
+
+#total flip operator
+def totalflip(conf):
+        return conf^(hilbertsize-1)
+
+#modified momentum operator
+def modtrans(conf):
+        return translate(totalflip(conf))
+
 
 #gives the lowest integer representative and the periodicity
 def lowestrepr(conf):
 	conf0=conf
 	conf1=conf
 	for i in range(L):
-		conf=translate(conf)
+		conf=modtrans(conf)
 		if conf1>conf: conf1=conf
 		elif conf0==conf: return conf1,i+1 
 	return conf1,L
@@ -63,7 +74,7 @@ def repr(conf):
 	if lowestrepr(conf)[0]==conf: return conf,0
 	lowest=lowestrepr(conf)[0]
 	for i in range(L):
-		conf=translate(conf)
+		conf=modtrans(conf)
 		if conf==lowest:return lowest,i+1
 
 
