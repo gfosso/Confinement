@@ -6,7 +6,7 @@ L=12
 hilbertsize=2**L
 epsilon=0.001
 delta=-epsilon**(-1)
-h=0.01
+h=0.05
 
 def binconf(c): return np.binary_repr(c,L)
 
@@ -119,7 +119,7 @@ def spectrum_totsz_k(Sz=0,m=0):
             value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
             d=lowestrepr(newconf) 
             if m%(L/d[1]) == 0:
-                Ham[ck.index(d),j] -= 2.*value*np.sqrt(ck[j][1]/d[1])*np.exp(complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
+                Ham[ck.index(d),j] -= 2.*value*np.sqrt(ck[j][1]/d[1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
     
     return np.sort(np.real(np.linalg.eigvals(np.abs(delta)**(-1)*Ham)))
        
