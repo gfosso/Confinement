@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.special as sp
 #size
-L=10
+L=12
 #hilbertsize
 hilbertsize=2**L
 epsilon=0.001
@@ -77,6 +77,14 @@ def repr(conf):
 		conf=modtrans(conf)
 		if conf==lowest:return lowest,i+1
 
+#tells if the state is twokinks state
+def twokinks(conf):
+    x=0.0
+    for i in range(L):
+        x+=2.*Spinflip(conf,i,(i+1)%L)[0]
+    if x==L-2: return True
+    else : return False
+
 
 def hilbertspace(Sz=0,m=0):
     #reduced hilbert space for symmetry sector tot_sz=0 
@@ -86,8 +94,9 @@ def hilbertspace(Sz=0,m=0):
             for i in range(len(c)):
                     if c[i]==lw: return False
             return True
+
     for conf in range(hilbertsize):
-    	if (count(conf) == L//2+Sz)&checkstate(lowestrepr(conf)):
+    	if (count(conf) == L//2+Sz)&checkstate(lowestrepr(conf))&twokinks(conf):
         		lw=lowestrepr(conf)
         		c.append(lw)
     #reduced hilbert space for momentum states k=0
@@ -118,7 +127,7 @@ def spectrum_totsz_k(Sz=0,m=0):
         for i in range(L):
             value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
             d=lowestrepr(newconf) 
-            if m%(L/d[1]) == 0:
+            if (m%(L/d[1]) == 0)&twokinks(d[0]):
                 Ham[ck.index(d),j] -= 2.*value*np.sqrt(ck[j][1]/d[1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
     
     return np.sort(np.real(np.linalg.eigvals(np.abs(delta)**(-1)*Ham)))

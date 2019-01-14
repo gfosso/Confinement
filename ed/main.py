@@ -7,7 +7,7 @@ from equations import *
 #L=8
 #if __name__=="__main__":
 colors = { 1:'r', 2:'b', 3:'g', 4:'y' }
-maxdev = 1
+maxdev = 2
 for dev in range(maxdev,0,-1):
     for k in range(L//2+1):
         Ek=np.sort(spectrum_totsz_k(Sz=dev-1,m=k))
@@ -17,10 +17,8 @@ for dev in range(maxdev,0,-1):
         plt.scatter(Ks,Ek,color=colors[dev])
 
 k = np.linspace(0,0.5*np.pi,101)
-#exact_single = lambda k : 1.*(1.-2.*epsilon*np.cos(2.*k))
-#plt.plot(k,exact_single(k),'r-')
-#Ek[k]=E[:]
-#    plt.plot(spec)
+exact_single = lambda k : 1.*(1.-2.*epsilon*np.cos(2.*k))
+plt.plot(k,exact_single(k),'r-')
 zn=-sp.ai_zeros(6)[0]
 for n in range(6):
     plt.plot(k,np.array([E(n=n,P=i) for i in k]))
