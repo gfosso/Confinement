@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.special as sp
 #size
-L=12
+L=10
 #hilbertsize
 hilbertsize=2**L
 epsilon=0.001
