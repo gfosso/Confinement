@@ -2,6 +2,7 @@ from staggered import *
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
+import scipy.special as sp
 
 # Define the expression whose roots we want to find
 
@@ -26,3 +27,11 @@ def E(n=0,P=0):
 #print("The solution is pa = ",pa_solution[0])
 #print("at which the value of the expression is",func(pa_solution)[0])
     return 2.-4.*epsilon*np.cos(P)*np.cos(2.*pa_solution[0])
+
+
+def E_bessel(n=0,P=0):
+    nmax=30
+    prec=10**(-2)
+    step=1
+    x=np.linspace(0,nmax,nmax/step)
+    def rootscout():
