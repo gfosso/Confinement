@@ -29,9 +29,11 @@ def E(n=0,P=0):
     return 2.-4.*epsilon*np.cos(P)*np.cos(2.*pa_solution[0])
 
 
-def E_bessel(n=0,P=0):
-    nmax=30
+def E_bessel(n=0,P=0,nmax=10):
     prec=10**(-2)
-    step=1
-    x=np.linspace(0,nmax,nmax/step)
-    def rootscout():
+    step=0.02
+    x=np.arange(-nmax,nmax,step)
+    func = lambda x : sp.jv(x,h**(-1)*np.cos(P))
+    z = func(x)*func(x+step)
+    zeros=np.sort(fsolve(func,x[z<0]))[::-1]
+    return 2. -4.*epsilon*h*zeros[n]
