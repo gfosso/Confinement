@@ -59,5 +59,6 @@ def fullspectrum(L):
         
         
     
-    return spl.eigh((np.abs(gpar)**(-1))*Ham)
+#    return spl.eigh((np.abs(gpar)**(-1))*Ham)
+    return np.sort(np.real(np.linalg.eigvals(epsilon*Ham)))
 #    return np.sort(np.linalg.eigvals(np.abs(delta)**(-1)*Ham))

@@ -1,6 +1,6 @@
 import numpy as np
 #size
-L=10
+L=6
 #hilbertsize
 hilbertsize=2**(2*L)
 gort=0.5
@@ -116,7 +116,7 @@ def spectrum_totsz_k(Sz0=0,Sz1=0,m=0):
             d=lowestrepr(newconf) 
             if (m%(L/d[1]) == 0):
                 Ham[ck.index(d),j] -= 2.*value*np.sqrt(ck[j][1]/d[1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
-            value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
+            value, newconf = Spinflip(ck[j][0],i+L,(i+1)%L+L)
             d=lowestrepr(newconf) 
             if (m%(L/d[1]) == 0):
                 Ham[ck.index(d),j] -= 2.*value*np.sqrt(ck[j][1]/d[1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
