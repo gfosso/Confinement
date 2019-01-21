@@ -1,6 +1,6 @@
 import numpy as np
 #size
-L=6
+L=10
 #hilbertsize
 hilbertsize=2**(2*L)
 gort=0.5
@@ -41,7 +41,7 @@ def Spinflip(conf,i,j):
 def count(conf,c):
 	if c==0:
 		return sum(readsite(conf,i) for i in range(L))
-	else if c==1:
+	elif c==1:
 		return sum(readsite(conf,i) for i in range(L,2*L))
 def translate(conf):
 	elle=readsite(conf,L)
@@ -69,7 +69,7 @@ def repr(conf):
 		conf=translate(conf)
 		if conf==lowest:return lowest,i+1
 #must be modified
-def hilbertspace(Sz=0,m=0):
+def hilbertspace(Sz0=0,Sz1=0,m=0):
     #reduced hilbert space for symmetry sector tot_sz=0 
     c=[]
     #return True if the state doesn't exist, False if it's already in the configuration vector
@@ -79,7 +79,7 @@ def hilbertspace(Sz=0,m=0):
             return True
 
     for conf in range(hilbertsize):
-    	if (count(conf) == L//2+Sz)&checkstate(lowestrepr(conf))&twokinks(conf):
+    	if (count(conf,0) == L//2+Sz0)&(count(conf,1)==L//2+Sz1)&checkstate(lowestrepr(conf)):
         		lw=lowestrepr(conf)
         		c.append(lw)
     #reduced hilbert space for momentum states k=0
@@ -101,19 +101,27 @@ def XXZHam2(conf):
 #coupling between the chains
 def XXZHamort(conf):
 	return sum([- 4.*gort*SzSz(conf,i,i+L)  for i in range(L) ])
-# diagonal part
-Ham = np.diag([XXZHam1(conf) for conf in range(hilbertsize)])
-Ham += np.diag([XXZHam2(conf) for conf in range(hilbertsize)])
-Ham += np.diag([XXZHamort(conf) for conf in range(hilbertsize)])
-# off-diagonal part
-for conf in range(hilbertsize):
-    for i in range(L):
-        value, newconf = Spinflip(conf,i,(i+1)%L)
-        Ham[newconf,conf] -=2.*value     
-    for i in range(L):
-        value, newconf = Spinflip(conf,i+L,(i+1)%L+L)
-        Ham[newconf,conf] -=2.*value     
         
+def spectrum_totsz_k(Sz0=0,Sz1=0,m=0):
+    # Hamiltonian in symmetry sector tot_sz=0 and k=0
+    # diagonal part
+    ck=hilbertspace(Sz0,Sz1,m)
+    Ham = np.diag(np.array([XXZHam1(ck[i][0]) for i in range(len(ck))],dtype=np.complex))
+    Ham += np.diag(np.array([XXZHam2(ck[i][0]) for i in range(len(ck))],dtype=np.complex))
+    Ham += np.diag(np.array([XXZHamort(ck[i][0]) for i in range(len(ck))],dtype=np.complex))
+    # off-diagonal part
+    for j in range(len(ck)):
+        for i in range(L):
+            value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
+            d=lowestrepr(newconf) 
+            if (m%(L/d[1]) == 0):
+                Ham[ck.index(d),j] -= 2.*value*np.sqrt(ck[j][1]/d[1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
+            value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
+            d=lowestrepr(newconf) 
+            if (m%(L/d[1]) == 0):
+                Ham[ck.index(d),j] -= 2.*value*np.sqrt(ck[j][1]/d[1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
+    
+    return np.sort(np.real(np.linalg.eigvals(epsilon*Ham)))
         
 #print(Ham)
 #en ,pin= np.linalg.eigh(Ham)
