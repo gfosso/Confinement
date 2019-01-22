@@ -1,9 +1,9 @@
 import numpy as np
 #size
-L=6
+L=10
 #hilbertsize
 hilbertsize=2**(2*L)
-gort=0.5
+gort=0.8
 epsilon=0.001
 gpar=-epsilon**(-1)
 
