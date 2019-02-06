@@ -3,7 +3,7 @@ import numpy as np
 L=10
 #hilbertsize
 hilbertsize=2**(2*L)
-gort=0.8
+gort=1000.0
 epsilon=0.001
 gpar=-epsilon**(-1)
 
