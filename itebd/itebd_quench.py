@@ -64,7 +64,7 @@ def main(argv):
     print(Ham)
 
     # First define the parameters of the model / simulation
-    J=-1.; chi=150; d=4; delta=0.1; T=10; L=int(T/delta);
+    J=-1.; chi=50; d=4; delta=0.01; T=10; L=int(T/delta);
 
     # Generate the two-site time evolution operator
     H_bond = Ham
@@ -94,8 +94,11 @@ def main(argv):
     #plt.show()
 
     #to save data to a file use
-    np.savetxt(outputfile,corr)
-
+#    np.savetxt(outputfile,corr)
+    plt.plot(corr[0])
+    plt.plot(corr[1])
+    plt.plot(corr[2])
+    plt.show()
 
     # Get the bond energies
     #E=[]

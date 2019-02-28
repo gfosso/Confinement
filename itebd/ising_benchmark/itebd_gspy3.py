@@ -17,8 +17,8 @@ from mps import *
 def ground_state(hlong):
     #Hamiltonian
     #hlong=0.10
-    htras=0.
-
+    htras=0.5
+    
 
     # First define the parameters of the model / simulation
     J=-1.; chi=100; d=2; delta=0.01; N=2000;
