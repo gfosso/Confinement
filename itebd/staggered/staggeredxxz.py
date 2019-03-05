@@ -7,9 +7,9 @@ from scipy.fftpack import fft
 def main(argv):
     cristo=mps(bond_dimension=300)
     hilbertsize=2**2
-    epsilon=0.1
+    epsilon=0.01
     gpar=-epsilon**(-1)
-    h=2
+    h=15
 
     HamA = np.diag([ -0.5*gpar*(4.*SzSz(conf,0,1)+1)-4.*h*Sz(conf,0)+4.*h*Sz(conf,1)   for conf in range(hilbertsize)])
     HamB = np.diag([ -0.5*gpar*(4.*SzSz(conf,0,1)+1)+4.*h*Sz(conf,0)-4.*h*Sz(conf,1)   for conf in range(hilbertsize)])

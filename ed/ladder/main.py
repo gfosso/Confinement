@@ -7,12 +7,12 @@ from equations import *
 #L=8
 #if __name__=="__main__":
 colors = { 1:'r', 2:'b', 3:'g', 4:'y' }
-maxdev = 2
+maxdev = 1
 for dev in range(maxdev,0,-1):
     for k in range(L//4+1):
         Ek=np.sort(spectrum_totsz_k(Sz0=dev-1,Sz1=0,m=k))
-        Ek=Ek[Ek<=2.5]
-        Ek=Ek[Ek>=1.5]
+#        Ek=Ek[Ek<=2.5]
+#        Ek=Ek[Ek>=1.5]
         Ks = 2*np.pi*k/L*np.ones(len(Ek))
         plt.scatter(Ks,Ek+ L*epsilon*gort,color=colors[dev])
 

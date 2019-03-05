@@ -1,12 +1,12 @@
 import numpy as np
 import scipy.special as sp
 #size
-L=16
+L=15
 #hilbertsize
 hilbertsize=2**L
-epsilon=0.1
+epsilon=0.001
 delta=-epsilon**(-1)
-h=2.0
+h=0.0
 
 def binconf(c): return np.binary_repr(c,L)
 
@@ -96,7 +96,7 @@ def hilbertspace(Sz=0,m=0):
             return True
 
     for conf in range(hilbertsize):
-    	if (count(conf) == L//2+Sz)&checkstate(lowestrepr(conf))&twokinks(conf):
+    	if (count(conf) == L//2+Sz)&checkstate(lowestrepr(conf)):#&twokinks(conf)
         		lw=lowestrepr(conf)
         		c.append(lw)
     #reduced hilbert space for momentum states k=0
@@ -127,7 +127,7 @@ def spectrum_totsz_k(Sz=0,m=0):
         for i in range(L):
             value, newconf = Spinflip(ck[j][0],i,(i+1)%L)
             d=lowestrepr(newconf) 
-            if (m%(L/d[1]) == 0)&twokinks(d[0]):
+            if (m%(L/d[1]) == 0):#&twokinks(d[0])
                 Ham[ck.index(d),j] -= 2.*value*np.sqrt(ck[j][1]/d[1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
     
     return np.sort(np.real(np.linalg.eigvals(np.abs(delta)**(-1)*Ham)))
