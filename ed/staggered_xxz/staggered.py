@@ -1,12 +1,12 @@
 import numpy as np
 import scipy.special as sp
 #size
-L=15
+L=16
 #hilbertsize
 hilbertsize=2**L
-epsilon=0.001
+epsilon=0.2
 delta=-epsilon**(-1)
-h=0.0
+h=1.
 
 def binconf(c): return np.binary_repr(c,L)
 
@@ -64,7 +64,7 @@ def lowestrepr(conf):
 	conf0=conf
 	conf1=conf
 	for i in range(L):
-		conf=modtrans(conf)
+		conf=modtrans(conf)#translate(conf)
 		if conf1>conf: conf1=conf
 		elif conf0==conf: return conf1,i+1 
 	return conf1,L
@@ -74,7 +74,7 @@ def repr(conf):
 	if lowestrepr(conf)[0]==conf: return conf,0
 	lowest=lowestrepr(conf)[0]
 	for i in range(L):
-		conf=modtrans(conf)
+		conf=modtrans(conf)#translate(conf)
 		if conf==lowest:return lowest,i+1
 
 #tells if the state is twokinks state
