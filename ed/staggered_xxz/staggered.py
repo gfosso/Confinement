@@ -4,9 +4,9 @@ import scipy.special as sp
 L=16
 #hilbertsize
 hilbertsize=2**L
-epsilon=0.2
+epsilon=0.1
 delta=-epsilon**(-1)
-h=1.
+h=0.5
 
 def binconf(c): return np.binary_repr(c,L)
 

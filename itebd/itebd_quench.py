@@ -40,7 +40,7 @@ def main(argv):
     #Hamiltonian
     htras=0.
     #gort=0.100
-    gpar=+2
+    gpar=2
     # diagonal part
     Ham = np.diag([ +gort*0.5*SzSz(conf,0,1) +gort*0.5*SzSz(conf,2,3) for conf in range(hilbertsize)])
     Ham += np.diag([+gpar*SzSz(conf,0,2) +gpar*SzSz(conf,1,3) for conf in range(hilbertsize)])
