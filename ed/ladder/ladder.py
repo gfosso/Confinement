@@ -1,10 +1,10 @@
 import numpy as np
 #size
-L=10
+L=8
 #hilbertsize
 hilbertsize=2**(2*L)
-gort=0.100
-epsilon=0.2
+gort=0.0
+epsilon=0.001
 gpar=-epsilon**(-1)
 
 def binconf(c): return np.binary_repr(c,2*L)
