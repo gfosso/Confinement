@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
 import scipy.special as sp
-
+import math
 # Define the expression whose roots we want to find
 
 def E(n=0,P=0):
@@ -29,9 +29,24 @@ def E(n=0,P=0):
     return 2.-4.*epsilon*np.cos(P)*np.cos(2.*pa_solution[0])
 
 
+def stagmag(delta,prec=10**(-10)):
+    gamma=math.acosh(-delta)
+    q=np.exp(gamma)
+    z=lambda n:((1-q**(-2*n))/(1+q**(-2*n)))**2
+    sigma=z(1)
+    n=1
+    while True:
+        if np.abs(sigma-sigma*z(n+1))/np.abs(sigma)<prec:
+            break
+        n+=1
+        sigma=sigma*z(n)
+    return sigma
+
+
+
 def E_bessel(n=0,P=0,nmax=10):
-    prec=10**(-2)
-    step=0.02
+    prec=10**(-4)
+    step=0.01
     x=np.arange(-nmax,nmax,step)
     func = lambda x : sp.jv(x,h**(-1)*np.cos(P))
     z = func(x)*func(x+step)

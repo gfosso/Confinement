@@ -1,0 +1,7 @@
+parametri per itebd
+
+Senza rescaling:
+delta=100 h*=1 -> dt=0.001 T>20 (circa quattro picchi con staggered sz)
+
+Con rescaling:
+delta=100 h=1 -> dt=0.1 T>2000 (circa quattro picchi con staggered sz)
