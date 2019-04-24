@@ -6,9 +6,9 @@ def fullspectrum(L):
 
     #hilbertsize
     hilbertsize=2**L
-    epsilon=0.001
+    epsilon=0.01
     delta=-epsilon**(-1)
-    h=0.05
+    h=0.00
     def binconf(c): return np.binary_repr(c,L)
 
     def readsite(conf,i): return (conf&(1<<i))>>i

@@ -1,13 +1,17 @@
 import numpy as np
 #size
-L=8
+L=10
 #hilbertsize
 hilbertsize=2**(2*L)
-gort=0.0
-epsilon=0.001
+gort=75
+epsilon=0.01
 gpar=-epsilon**(-1)
 
 def binconf(c): return np.binary_repr(c,2*L)
+
+def readable(c):
+    s=binconf(c)
+    print("",s[0:L],"\n",s[L:2*L])
 
 def readsite(conf,i): return (conf&(1<<i))>>i
 
@@ -121,7 +125,8 @@ def spectrum_totsz_k(Sz0=0,Sz1=0,m=0):
             if (m%(L/d[1]) == 0):
                 Ham[ck.index(d),j] -= 2.*value*np.sqrt(ck[j][1]/d[1])*np.exp(-complex(0,(2.*np.pi*m)/L*repr(newconf)[1]))
     
-    return np.sort(np.real(np.linalg.eigvals(epsilon*Ham)))
+    return np.linalg.eig(epsilon*Ham)
+#    return np.sort(np.real(np.linalg.eigvals(epsilon*Ham)))
         
 #print(Ham)
 #en ,pin= np.linalg.eigh(Ham)

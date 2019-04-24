@@ -6,7 +6,7 @@ def fullspectrum(L):
 
     #hilbertsize
     hilbertsize=2**(2*L)
-    gort=0.5
+    gort=0.1
     epsilon=0.001
     gpar=-epsilon**(-1)
     def binconf(c): return np.binary_repr(c,L)
@@ -59,6 +59,7 @@ def fullspectrum(L):
         
         
     
-#    return spl.eigh((np.abs(gpar)**(-1))*Ham)
-    return np.sort(np.real(np.linalg.eigvals(epsilon*Ham)))
+    return spl.eigh((np.abs(gpar)**(-1))*Ham)
+ #   return np.sort(np.real(np.linalg.eigvals(epsilon*Ham)))
+#    return np.linalg.eig(epsilon*Ham)
 #    return np.sort(np.linalg.eigvals(np.abs(delta)**(-1)*Ham))
